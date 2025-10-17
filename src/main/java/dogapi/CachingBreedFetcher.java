@@ -1,6 +1,8 @@
 package dogapi;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This BreedFetcher caches fetch request results to improve performance and
@@ -13,16 +15,27 @@ import java.util.*;
  * The cache maps the name of a breed to its list of sub breed names.
  */
 public class CachingBreedFetcher implements BreedFetcher {
-    // TODO Task 2: Complete this class
+    private final BreedFetcher underlyingFetcher;
+    private final Map<String, List<String>> cache;
     private int callsMade = 0;
+    
     public CachingBreedFetcher(BreedFetcher fetcher) {
-
+        this.underlyingFetcher = fetcher;
+        this.cache = new HashMap<>();
     }
 
     @Override
     public List<String> getSubBreeds(String breed) {
-        // return statement included so that the starter code can compile and run.
-        return new ArrayList<>();
+        if (cache.containsKey(breed)) {
+            return cache.get(breed);
+        }
+        
+        callsMade++;
+        List<String> result = underlyingFetcher.getSubBreeds(breed);
+        
+        cache.put(breed, result);
+        
+        return result;
     }
 
     public int getCallsMade() {
